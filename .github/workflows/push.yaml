@@ -28,9 +28,10 @@ jobs:
         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     # Step 4: Build the Nginx Docker image
-    - name: Build Docker image
+   
+    - name: Pull official Nginx image
       run: |
-        docker build -t nginx:latest .
+        docker pull nginx:latest
 
     # Step 5: Tag the Docker image for ECR
     - name: Tag Docker image
