@@ -55,5 +55,5 @@ jobs:
     
     - name: Deploy to EKS
       run: |
-        kubectl set image deployment/my-app my-app-container=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest --record
+        kubectl set image deployment/my-app my-app-container=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
         kubectl rollout status deployment/my-app
