@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app-container  # This must match the name in kubectl set image
+        image: 491444571351.dkr.ecr.us-west-2.amazonaws.com/testeks:latest  # Use a placeholder for the image
+        ports:
+        - containerPort: 80
+
+
