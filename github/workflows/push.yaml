@@ -3,7 +3,7 @@ name: Build and Deploy Nginx to ECR
 on:
   push:
     branches:
-      - tedf  # Trigger deployment when pushing to the `main` branch
+      - tedf  
 
 jobs:
   build_and_deploy:
