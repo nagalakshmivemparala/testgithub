@@ -1,0 +1,58 @@
+name: Build and Deploy Nginx to ECR
+
+on:
+  push:
+    branches:
+      - tedf  # Trigger deployment when pushing to the `main` branch
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Step 2: Set up AWS CLI
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # Step 3: Log in to Docker to ECR
+    - name: Log in to Amazon ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    # Step 4: Build the Nginx Docker image
+    - name: Build Docker image
+      run: |
+        docker build -t nginx:latest .
+
+    # Step 5: Tag the Docker image for ECR
+    - name: Tag Docker image
+      run: |
+        docker tag nginx:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+
+    # Step 6: Push the Docker image to ECR
+    - name: Push Docker image to ECR
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+
+    # Optional: Step 7 - Deploy to EKS (uncomment if you want to deploy to EKS)
+    # - name: Set up kubectl for EKS
+    #   uses: azure/setup-kubectl@v2
+    #   with:
+    #     version: 'v1.22.0'
+
+    # - name: Configure kubectl for EKS
+    #   run: |
+    #     aws eks update-kubeconfig --name <eks-cluster-name> --region ${{ secrets.AWS_REGION }}
+    #
+    # - name: Deploy to EKS
+    #   run: |
+    #     kubectl set image deployment/my-app my-app-container=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest --record
+    #     kubectl rollout status deployment/my-app
