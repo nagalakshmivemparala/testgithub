@@ -52,7 +52,15 @@ jobs:
     - name: Configure kubectl for EKS
       run: |
         aws eks update-kubeconfig --name clusteyyufg --region ${{ secrets.AWS_REGION }}
-    
+    - name: Install NGINX Ingress Controller (only once)
+      run: |
+        # Check if NGINX Ingress Controller is already installed
+        if ! kubectl get namespace ingress-nginx; then
+          # Apply the NGINX Ingress Controller manifests
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
+        else
+          echo "NGINX Ingress Controller is already installed."
+        fi
     - name: Deploy to EKS
       run: |
         kubectl apply -f deployment.yaml
