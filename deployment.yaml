@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 491444571351.dkr.ecr.us-west-2.amazonaws.com/testeks:lates
+        image: 491444571351.dkr.ecr.us-west-2.amazonaws.com/testeks:latest
         ports:
         - containerPort: 80
         env:
